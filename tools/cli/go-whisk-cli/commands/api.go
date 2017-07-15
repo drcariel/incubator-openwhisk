@@ -120,10 +120,7 @@ func getManagedUrl(api *whisk.RetApi, relpath string, operation string) (url str
     return url
 }
 
-/////////////
-// V2 Cmds //
-/////////////
-var apiCreateCmdV2 = &cobra.Command{
+var apiCreateCmd = &cobra.Command{
     Use:           "create ([BASE_PATH] API_PATH API_VERB ACTION] | --config-file CFG_FILE) ",
     Short:         wski18n.T("create a new API"),
     SilenceUsage:  true,
@@ -141,7 +138,7 @@ var apiCreateCmdV2 = &cobra.Command{
                 whisk.DISPLAY_MSG, whisk.DISPLAY_USAGE)
             return whiskErr
         } else if (len(args) == 0 && flags.api.configfile != "") {
-            api, err = parseSwaggerApiV2()
+            api, err = parseSwaggerApi()
             if err != nil {
                 whisk.Debug(whisk.DbgError, "parseSwaggerApi() error: %s\n", err)
                 errMsg := wski18n.T("Unable to parse swagger file: {{.err}}", map[string]interface{}{"err": err})
@@ -154,9 +151,9 @@ var apiCreateCmdV2 = &cobra.Command{
                 wski18n.T("Specify a swagger file or specify an API base path with an API path, an API verb, and an action name.")); whiskErr != nil {
                 return whiskErr
             }
-            api, qname, err = parseApiV2(cmd, args)
+            api, qname, err = parseApi(cmd, args)
             if err != nil {
-                whisk.Debug(whisk.DbgError, "parseApiV2(%s, %s) error: %s\n", cmd, args, err)
+                whisk.Debug(whisk.DbgError, "parseApi(%s, %s) error: %s\n", cmd, args, err)
                 errMsg := wski18n.T("Unable to parse api command arguments: {{.err}}",
                     map[string]interface{}{"err": err})
                 whiskErr := whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXITCODE_ERR_GENERAL,
@@ -187,9 +184,9 @@ var apiCreateCmdV2 = &cobra.Command{
         whisk.Debug(whisk.DbgInfo, "AccessToken: %s\nSpaceGuid: %s\nResponsType: %s",
             apiCreateReqOptions.AccessToken, apiCreateReqOptions.SpaceGuid, apiCreateReqOptions.ResponseType)
 
-        retApi, _, err := client.Apis.InsertV2(apiCreateReq, apiCreateReqOptions, whisk.DoNotOverwrite)
+        retApi, _, err := client.Apis.Insert(apiCreateReq, apiCreateReqOptions, whisk.DoNotOverwrite)
         if err != nil {
-            whisk.Debug(whisk.DbgError, "client.Apis.InsertV2(%#v, false) error: %s\n", api, err)
+            whisk.Debug(whisk.DbgError, "client.Apis.Insert(%#v, false) error: %s\n", api, err)
             errMsg := wski18n.T("Unable to create API: {{.err}}", map[string]interface{}{"err": err})
             whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXITCODE_ERR_GENERAL,
                 whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
@@ -253,7 +250,7 @@ var apiCreateCmdV2 = &cobra.Command{
     },
 }
 
-var apiGetCmdV2 = &cobra.Command{
+var apiGetCmd = &cobra.Command{
     Use:           "get BASE_PATH | API_NAME",
     Short:         wski18n.T("get API details"),
     SilenceUsage:  true,
@@ -287,15 +284,15 @@ var apiGetCmdV2 = &cobra.Command{
             return err
         }
 
-        retApi, _, err := client.Apis.GetV2(apiGetReq, apiGetReqOptions)
+        retApi, _, err := client.Apis.Get(apiGetReq, apiGetReqOptions)
         if err != nil {
-            whisk.Debug(whisk.DbgError, "client.Apis.GetV2(%#v, %#v) error: %s\n", apiGetReq, apiGetReqOptions, err)
+            whisk.Debug(whisk.DbgError, "client.Apis.Get(%#v, %#v) error: %s\n", apiGetReq, apiGetReqOptions, err)
             errMsg := wski18n.T("Unable to get API '{{.name}}': {{.err}}", map[string]interface{}{"name": args[0], "err": err})
             whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXITCODE_ERR_GENERAL,
                 whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
             return whiskErr
         }
-        whisk.Debug(whisk.DbgInfo, "client.Apis.GetV2 returned: %#v\n", retApi)
+        whisk.Debug(whisk.DbgInfo, "client.Apis.Get returned: %#v\n", retApi)
 
         var displayResult interface{} = nil
         if (flags.common.detail) {
@@ -351,7 +348,7 @@ var apiGetCmdV2 = &cobra.Command{
     },
 }
 
-var apiDeleteCmdV2 = &cobra.Command{
+var apiDeleteCmd = &cobra.Command{
     Use:           "delete BASE_PATH | API_NAME [API_PATH [API_VERB]]",
     Short:         wski18n.T("delete an API"),
     SilenceUsage:  true,
@@ -397,9 +394,9 @@ var apiDeleteCmdV2 = &cobra.Command{
             apiDeleteReqOptions.ApiVerb = strings.ToUpper(args[2])
         }
 
-        _, err = client.Apis.DeleteV2(apiDeleteReq, apiDeleteReqOptions)
+        _, err = client.Apis.Delete(apiDeleteReq, apiDeleteReqOptions)
         if err != nil {
-            whisk.Debug(whisk.DbgError, "client.Apis.DeleteV2(%#v, %#v) error: %s\n", apiDeleteReq, apiDeleteReqOptions, err)
+            whisk.Debug(whisk.DbgError, "client.Apis.Delete(%#v, %#v) error: %s\n", apiDeleteReq, apiDeleteReqOptions, err)
             errMsg := wski18n.T("Unable to delete API: {{.err}}", map[string]interface{}{"err": err})
             whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXITCODE_ERR_GENERAL,
                 whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
@@ -436,7 +433,7 @@ var apiDeleteCmdV2 = &cobra.Command{
     },
 }
 
-var apiListCmdV2 = &cobra.Command{
+var apiListCmd = &cobra.Command{
     Use:           "list [[BASE_PATH | API_NAME] [API_PATH [API_VERB]]",
     Short:         wski18n.T("list APIs"),
     SilenceUsage:  true,
@@ -444,9 +441,9 @@ var apiListCmdV2 = &cobra.Command{
     PreRunE:       setupClientConfig,
     RunE: func(cmd *cobra.Command, args []string) error {
         var err error
-        var retApiList *whisk.ApiListResponseV2
-        var retApi *whisk.ApiGetResponseV2
-        var retApiArray *whisk.RetApiArrayV2
+        var retApiList *whisk.ApiListResponse
+        var retApi *whisk.ApiGetResponse
+        var retApiArray *whisk.RetApiArray
         var apiPath string
         var apiVerb string
 
@@ -467,17 +464,17 @@ var apiListCmdV2 = &cobra.Command{
                 return err
             }
 
-            retApiList, _, err = client.Apis.ListV2(apiListReqOptions)
+            retApiList, _, err = client.Apis.List(apiListReqOptions)
             if err != nil {
-                whisk.Debug(whisk.DbgError, "client.Apis.ListV2(%#v) error: %s\n", apiListReqOptions, err)
+                whisk.Debug(whisk.DbgError, "client.Apis.List(%#v) error: %s\n", apiListReqOptions, err)
                 errMsg := wski18n.T("Unable to obtain the API list: {{.err}}", map[string]interface{}{"err": err})
                 whiskErr := whisk.MakeWskError(errors.New(errMsg), whisk.EXITCODE_ERR_GENERAL,
                     whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
                 return whiskErr
             }
-            whisk.Debug(whisk.DbgInfo, "client.Apis.ListV2 returned: %#v (%+v)\n", retApiList, retApiList)
+            whisk.Debug(whisk.DbgInfo, "client.Apis.List returned: %#v (%+v)\n", retApiList, retApiList)
             // Cast to a common type to allow for code to print out apilist response or apiget response
-            retApiArray = (*whisk.RetApiArrayV2)(retApiList)
+            retApiArray = (*whisk.RetApiArray)(retApiList)
         } else {
             // Get API request body
             apiGetReq := new(whisk.ApiGetRequest)
@@ -510,17 +507,17 @@ var apiListCmdV2 = &cobra.Command{
                 apiGetReqOptions.ApiVerb = apiVerb
             }
 
-            retApi, _, err = client.Apis.GetV2(apiGetReq, apiGetReqOptions)
+            retApi, _, err = client.Apis.Get(apiGetReq, apiGetReqOptions)
             if err != nil {
-                whisk.Debug(whisk.DbgError, "client.Apis.GetV2(%#v, %#v) error: %s\n", apiGetReq, apiGetReqOptions, err)
+                whisk.Debug(whisk.DbgError, "client.Apis.Get(%#v, %#v) error: %s\n", apiGetReq, apiGetReqOptions, err)
                 errMsg := wski18n.T("Unable to obtain the API list: {{.err}}", map[string]interface{}{"err": err})
                 whiskErr := whisk.MakeWskErrorFromWskError(errors.New(errMsg), err, whisk.EXITCODE_ERR_GENERAL,
                     whisk.DISPLAY_MSG, whisk.NO_DISPLAY_USAGE)
                 return whiskErr
             }
-            whisk.Debug(whisk.DbgInfo, "client.Apis.GetV2 returned: %#v\n", retApi)
+            whisk.Debug(whisk.DbgInfo, "client.Apis.Get returned: %#v\n", retApi)
             // Cast to a common type to allow for code to print out apilist response or apiget response
-            retApiArray = (*whisk.RetApiArrayV2)(retApi)
+            retApiArray = (*whisk.RetApiArray)(retApi)
         }
 
         // Display the APIs - applying any specified filtering
@@ -532,14 +529,14 @@ var apiListCmdV2 = &cobra.Command{
                     }))
 
             for i:=0; i<len(retApiArray.Apis); i++ {
-                printFilteredListApiV2(retApiArray.Apis[i].ApiValue, apiPath, apiVerb)
+                printFilteredListApi(retApiArray.Apis[i].ApiValue, apiPath, apiVerb)
             }
         } else {
             if (len(retApiArray.Apis) > 0) {
                 // Dynamically create the output format string based on the maximum size of the
                 // fully qualified action name and the API Name.
-                maxActionNameSize := min(40, max(len("Action"), getLargestActionNameSizeV2(retApiArray, apiPath, apiVerb)))
-                maxApiNameSize := min(30, max(len("API Name"), getLargestApiNameSizeV2(retApiArray, apiPath, apiVerb)))
+                maxActionNameSize := min(40, max(len("Action"), getLargestActionNameSize(retApiArray, apiPath, apiVerb)))
+                maxApiNameSize := min(30, max(len("API Name"), getLargestApiNameSize(retApiArray, apiPath, apiVerb)))
                 fmtString = "%-"+strconv.Itoa(maxActionNameSize)+"s %7s %"+strconv.Itoa(maxApiNameSize+1)+"s  %s\n"
                 fmt.Fprintf(color.Output,
                     wski18n.T("{{.ok}} APIs\n",
@@ -548,7 +545,7 @@ var apiListCmdV2 = &cobra.Command{
                         }))
                 fmt.Printf(fmtString, "Action", "Verb", "API Name", "URL")
                 for i:=0; i<len(retApiArray.Apis); i++ {
-                    printFilteredListRowV2(retApiArray.Apis[i].ApiValue, apiPath, apiVerb, maxActionNameSize, maxApiNameSize)
+                    printFilteredListRow(retApiArray.Apis[i].ApiValue, apiPath, apiVerb, maxActionNameSize, maxApiNameSize)
                 }
             } else {
                 fmt.Fprintf(color.Output,
@@ -569,19 +566,19 @@ var apiListCmdV2 = &cobra.Command{
  * and some filtering configuration.  For each API endpoint matching the filtering criteria, display
  * each endpoint's configuration - one line per configuration property (action name, verb, api name, api gw url)
  */
-func printFilteredListApiV2(resultApi *whisk.RetApiV2, apiPath string, apiVerb string) {
+func printFilteredListApi(resultApi *whisk.RetApi, apiPath string, apiVerb string) {
     baseUrl := strings.TrimSuffix(resultApi.BaseUrl, "/")
     apiName := resultApi.Swagger.Info.Title
     basePath := resultApi.Swagger.BasePath
     if (resultApi.Swagger != nil && resultApi.Swagger.Paths != nil) {
         for path, _ := range resultApi.Swagger.Paths {
-            whisk.Debug(whisk.DbgInfo, "printFilteredListApiV2: comparing api relpath: %s\n", path)
+            whisk.Debug(whisk.DbgInfo, "printFilteredListApi: comparing api relpath: %s\n", path)
             if ( len(apiPath) == 0 || path == apiPath) {
-                whisk.Debug(whisk.DbgInfo, "printFilteredListApiV2: relpath matches\n")
+                whisk.Debug(whisk.DbgInfo, "printFilteredListApi: relpath matches\n")
                 for op, opv  := range resultApi.Swagger.Paths[path] {
-                    whisk.Debug(whisk.DbgInfo, "printFilteredListApiV2: comparing operation: '%s'\n", op)
+                    whisk.Debug(whisk.DbgInfo, "printFilteredListApi: comparing operation: '%s'\n", op)
                     if ( len(apiVerb) == 0 || strings.ToLower(op) == strings.ToLower(apiVerb)) {
-                        whisk.Debug(whisk.DbgInfo, "printFilteredListApiV2: operation matches: %#v\n", opv)
+                        whisk.Debug(whisk.DbgInfo, "printFilteredListApi: operation matches: %#v\n", opv)
                         var actionName string
                         if (opv.XOpenWhisk == nil) {
                             actionName = ""
@@ -610,18 +607,18 @@ func printFilteredListApiV2(resultApi *whisk.RetApiV2, apiPath string, apiVerb s
  *
  * NOTE: Large action name and api name value will be truncated by their associated max size parameters.
  */
-func printFilteredListRowV2(resultApi *whisk.RetApiV2, apiPath string, apiVerb string, maxActionNameSize int, maxApiNameSize int) {
+func printFilteredListRow(resultApi *whisk.RetApi, apiPath string, apiVerb string, maxActionNameSize int, maxApiNameSize int) {
     baseUrl := strings.TrimSuffix(resultApi.BaseUrl, "/")
     apiName := resultApi.Swagger.Info.Title
     if (resultApi.Swagger != nil && resultApi.Swagger.Paths != nil) {
         for path, _ := range resultApi.Swagger.Paths {
-            whisk.Debug(whisk.DbgInfo, "printFilteredListRowV2: comparing api relpath: %s\n", path)
+            whisk.Debug(whisk.DbgInfo, "printFilteredListRow: comparing api relpath: %s\n", path)
             if ( len(apiPath) == 0 || path == apiPath) {
-                whisk.Debug(whisk.DbgInfo, "printFilteredListRowV2: relpath matches\n")
+                whisk.Debug(whisk.DbgInfo, "printFilteredListRow: relpath matches\n")
                 for op, opv  := range resultApi.Swagger.Paths[path] {
-                    whisk.Debug(whisk.DbgInfo, "printFilteredListRowV2: comparing operation: '%s'\n", op)
+                    whisk.Debug(whisk.DbgInfo, "printFilteredListRow: comparing operation: '%s'\n", op)
                     if ( len(apiVerb) == 0 || strings.ToLower(op) == strings.ToLower(apiVerb)) {
-                        whisk.Debug(whisk.DbgInfo, "printFilteredListRowV2: operation matches: %#v\n", opv)
+                        whisk.Debug(whisk.DbgInfo, "printFilteredListRow: operation matches: %#v\n", opv)
                         var actionName string
                         if (opv.XOpenWhisk == nil) {
                             actionName = ""
@@ -642,7 +639,7 @@ func printFilteredListRowV2(resultApi *whisk.RetApiV2, apiPath string, apiVerb s
     }
 }
 
-func getLargestActionNameSizeV2(retApiArray *whisk.RetApiArrayV2, apiPath string, apiVerb string) int {
+func getLargestActionNameSize(retApiArray *whisk.RetApiArray, apiPath string, apiVerb string) int {
     var maxNameSize = 0
     for i:=0; i<len(retApiArray.Apis); i++ {
         var resultApi = retApiArray.Apis[i].ApiValue
@@ -675,7 +672,7 @@ func getLargestActionNameSizeV2(retApiArray *whisk.RetApiArrayV2, apiPath string
     return maxNameSize
 }
 
-func getLargestApiNameSizeV2(retApiArray *whisk.RetApiArrayV2, apiPath string, apiVerb string) int {
+func getLargestApiNameSize(retApiArray *whisk.RetApiArray, apiPath string, apiVerb string) int {
     var maxNameSize = 0
     for i:=0; i<len(retApiArray.Apis); i++ {
         var resultApi = retApiArray.Apis[i].ApiValue
@@ -713,7 +710,7 @@ func getLargestApiNameSizeV2(retApiArray *whisk.RetApiArrayV2, apiPath string, a
  * args[1] = API verb
  * args[2] = Optional.  Action name (may or may not be qualified with namespace and package name)
  */
-func parseApiV2(cmd *cobra.Command, args []string) (*whisk.Api, *QualifiedName, error) {
+func parseApi(cmd *cobra.Command, args []string) (*whisk.Api, *QualifiedName, error) {
     var err error
     var basepath string = "/"
     var apiname string
@@ -804,7 +801,7 @@ func parseApiV2(cmd *cobra.Command, args []string) (*whisk.Api, *QualifiedName, 
     return api, &qName, nil
 }
 
-func parseSwaggerApiV2() (*whisk.Api, error) {
+func parseSwaggerApi() (*whisk.Api, error) {
     // Test is for completeness, but this situation should only arise due to an internal error
     if ( len(flags.api.configfile) == 0 ) {
         whisk.Debug(whisk.DbgError, "No swagger file is specified\n")
@@ -840,7 +837,7 @@ func parseSwaggerApiV2() (*whisk.Api, error) {
     }
 
     // Parse the JSON into a swagger object
-    swaggerObj := new(whisk.ApiSwaggerV2)
+    swaggerObj := new(whisk.ApiSwagger)
     err = json.Unmarshal([]byte(swagger), swaggerObj)
     if ( err != nil ) {
         whisk.Debug(whisk.DbgError, "JSON parse of `%s' error: %s\n", flags.api.configfile, err)
@@ -917,18 +914,18 @@ func getUserContextId() (string, error) {
 ///////////
 
 func init() {
-    apiCreateCmdV2.Flags().StringVarP(&flags.api.apiname, "apiname", "n", "", wski18n.T("Friendly name of the API; ignored when CFG_FILE is specified (default BASE_PATH)"))
-    apiCreateCmdV2.Flags().StringVarP(&flags.api.configfile, "config-file", "c", "", wski18n.T("`CFG_FILE` containing API configuration in swagger JSON format"))
-    apiCreateCmdV2.Flags().StringVar(&flags.api.resptype, "response-type", "json", wski18n.T("Set the web action response `TYPE`. Possible values are html, http, json, text, svg"))
-    apiGetCmdV2.Flags().BoolVarP(&flags.common.detail, "full", "f", false, wski18n.T("display full API configuration details"))
-    apiGetCmdV2.Flags().StringVarP(&flags.common.format, "format", "", formatOptionJson, wski18n.T("Specify the API output `TYPE`, either json or yaml"))
-    apiListCmdV2.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of actions from the result"))
-    apiListCmdV2.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of actions from the collection"))
-    apiListCmdV2.Flags().BoolVarP(&flags.common.full, "full", "f", false, wski18n.T("display full description of each API"))
+    apiCreateCmd.Flags().StringVarP(&flags.api.apiname, "apiname", "n", "", wski18n.T("Friendly name of the API; ignored when CFG_FILE is specified (default BASE_PATH)"))
+    apiCreateCmd.Flags().StringVarP(&flags.api.configfile, "config-file", "c", "", wski18n.T("`CFG_FILE` containing API configuration in swagger JSON format"))
+    apiCreateCmd.Flags().StringVar(&flags.api.resptype, "response-type", "json", wski18n.T("Set the web action response `TYPE`. Possible values are html, http, json, text, svg"))
+    apiGetCmd.Flags().BoolVarP(&flags.common.detail, "full", "f", false, wski18n.T("display full API configuration details"))
+    apiGetCmd.Flags().StringVarP(&flags.common.format, "format", "", formatOptionJson, wski18n.T("Specify the API output `TYPE`, either json or yaml"))
+    apiListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of actions from the result"))
+    apiListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of actions from the collection"))
+    apiListCmd.Flags().BoolVarP(&flags.common.full, "full", "f", false, wski18n.T("display full description of each API"))
     apiCmd.AddCommand(
-        apiCreateCmdV2,
-        apiGetCmdV2,
-        apiDeleteCmdV2,
-        apiListCmdV2,
+        apiCreateCmd,
+        apiGetCmd,
+        apiDeleteCmd,
+        apiListCmd,
     )
 }
