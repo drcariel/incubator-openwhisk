@@ -47,10 +47,10 @@ const (
 // Commands //
 //////////////
 
-var apiExperimentalCmd = &cobra.Command{
-    Use:   "api-experimental",
-    Short: wski18n.T("work with APIs (experimental)"),
-}
+// var apiExperimentalCmd = &cobra.Command{
+//     Use:   "api-experimental",
+//     Short: wski18n.T("work with APIs (experimental)"),
+// }
 
 var apiCmd = &cobra.Command{
     Use:   "api",
@@ -1574,13 +1574,13 @@ func init() {
     apiListCmd.Flags().IntVarP(&flags.common.skip, "skip", "s", 0, wski18n.T("exclude the first `SKIP` number of actions from the result"))
     apiListCmd.Flags().IntVarP(&flags.common.limit, "limit", "l", 30, wski18n.T("only return `LIMIT` number of actions from the collection"))
     apiListCmd.Flags().BoolVarP(&flags.common.full, "full", "f", false, wski18n.T("display full description of each API"))
-    apiExperimentalCmd.AddCommand(
-        apiCreateCmd,
-        //apiUpdateCmd,
-        apiGetCmd,
-        apiDeleteCmd,
-        apiListCmd,
-    )
+    // apiExperimentalCmd.AddCommand(
+    //     apiCreateCmd,
+    //     //apiUpdateCmd,
+    //     apiGetCmd,
+    //     apiDeleteCmd,
+    //     apiListCmd,
+    // )
 
     apiCreateCmdV2.Flags().StringVarP(&flags.api.apiname, "apiname", "n", "", wski18n.T("Friendly name of the API; ignored when CFG_FILE is specified (default BASE_PATH)"))
     apiCreateCmdV2.Flags().StringVarP(&flags.api.configfile, "config-file", "c", "", wski18n.T("`CFG_FILE` containing API configuration in swagger JSON format"))
