@@ -77,8 +77,10 @@ import whisk.http.Messages
 
 @RunWith(classOf[JUnitRunner])
 class WebActionsApiTestsV1 extends FlatSpec with Matchers with WebActionsApiTests {
-    override lazy val webInvokePathSegments = Seq("experimental", "web")
-    override lazy val webApiDirectives = WebApiDirectives.exp
+    //override lazy val webInvokePathSegments = Seq("experimental", "web")
+    override lazy val webInvokePathSegments = Seq("web")
+    //override lazy val webApiDirectives = WebApiDirectives.exp
+    override lazy val webApiDirectives = WebApiDirectives.web
 
     "properties" should "match verion" in {
         webApiDirectives.method shouldBe "__ow_meta_verb"

@@ -149,54 +149,54 @@ class ApiGwRoutemgmtActionTests
         return rr
     }
 
-    def apiMatchExperimental(
-        apiarr: Vector[JsValue],
-        basepath: String = "/",
-        relpath: String = "",
-        operation: String = "",
-        apiname: String = "",
-        action: ApiAction = null): Boolean = {
-        var matches: Boolean = false
-        for (api <- apiarr) {
-            val basepathExists = JsObjectHelper(api.asJsObject).fieldPathExists("value", "apidoc", "basePath")
-            if (basepathExists) {
-                System.out.println("basePath exists")
-                val basepathMatches = (JsObjectHelper(api.asJsObject).getFieldPath("value", "apidoc", "basePath").get.convertTo[String] == basepath)
-                if (basepathMatches) {
-                    System.out.println("basePath matches: " + basepath)
-                    val apinameExists = JsObjectHelper(api.asJsObject).fieldPathExists("value", "apidoc", "info", "title")
-                    if (apinameExists) {
-                        System.out.println("api name exists")
-                        val apinameMatches = (JsObjectHelper(api.asJsObject).getFieldPath("value", "apidoc", "info", "title").get.convertTo[String] == apiname)
-                        if (apinameMatches) {
-                            System.out.println("api name matches: " + apiname)
-                            val endpointMatches = JsObjectHelper(api.asJsObject).fieldPathExists("value", "apidoc", "paths", relpath, operation)
-                            if (endpointMatches) {
-                                System.out.println("endpoint exists/matches : " + relpath + "  " + operation)
-                                val actionConfig = JsObjectHelper(api.asJsObject).getFieldPath("value", "apidoc", "paths", relpath, operation, "x-ibm-op-ext").get.asJsObject
-                                val actionMatches = actionMatchExperimental(actionConfig, action)
-                                if (actionMatches) {
-                                    System.out.println("endpoint action matches")
-                                    matches = true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return matches
-    }
+    // def apiMatchExperimental(
+    //     apiarr: Vector[JsValue],
+    //     basepath: String = "/",
+    //     relpath: String = "",
+    //     operation: String = "",
+    //     apiname: String = "",
+    //     action: ApiAction = null): Boolean = {
+    //     var matches: Boolean = false
+    //     for (api <- apiarr) {
+    //         val basepathExists = JsObjectHelper(api.asJsObject).fieldPathExists("value", "apidoc", "basePath")
+    //         if (basepathExists) {
+    //             System.out.println("basePath exists")
+    //             val basepathMatches = (JsObjectHelper(api.asJsObject).getFieldPath("value", "apidoc", "basePath").get.convertTo[String] == basepath)
+    //             if (basepathMatches) {
+    //                 System.out.println("basePath matches: " + basepath)
+    //                 val apinameExists = JsObjectHelper(api.asJsObject).fieldPathExists("value", "apidoc", "info", "title")
+    //                 if (apinameExists) {
+    //                     System.out.println("api name exists")
+    //                     val apinameMatches = (JsObjectHelper(api.asJsObject).getFieldPath("value", "apidoc", "info", "title").get.convertTo[String] == apiname)
+    //                     if (apinameMatches) {
+    //                         System.out.println("api name matches: " + apiname)
+    //                         val endpointMatches = JsObjectHelper(api.asJsObject).fieldPathExists("value", "apidoc", "paths", relpath, operation)
+    //                         if (endpointMatches) {
+    //                             System.out.println("endpoint exists/matches : " + relpath + "  " + operation)
+    //                             val actionConfig = JsObjectHelper(api.asJsObject).getFieldPath("value", "apidoc", "paths", relpath, operation, "x-ibm-op-ext").get.asJsObject
+    //                             val actionMatches = actionMatchExperimental(actionConfig, action)
+    //                             if (actionMatches) {
+    //                                 System.out.println("endpoint action matches")
+    //                                 matches = true;
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return matches
+    // }
 
-    def actionMatchExperimental(
-        jsAction: JsObject,
-        action: ApiAction): Boolean = {
-        val matches = jsAction.fields("backendMethod").convertTo[String] == action.backendMethod &&
-            jsAction.fields("backendUrl").convertTo[String] == action.backendUrl &&
-            jsAction.fields("actionNamespace").convertTo[String] == action.namespace &&
-            jsAction.fields("actionName").convertTo[String] == action.name
-        return matches
-    }
+    // def actionMatchExperimental(
+    //     jsAction: JsObject,
+    //     action: ApiAction): Boolean = {
+    //     val matches = jsAction.fields("backendMethod").convertTo[String] == action.backendMethod &&
+    //         jsAction.fields("backendUrl").convertTo[String] == action.backendUrl &&
+    //         jsAction.fields("actionNamespace").convertTo[String] == action.namespace &&
+    //         jsAction.fields("actionName").convertTo[String] == action.name
+    //     return matches
+    // } ????????????????????????????????????????????????????*******************************???????????????????????????????
 
     def getApisV2(
         bpOrName: Option[String],
@@ -362,7 +362,7 @@ class ApiGwRoutemgmtActionTests
             JsObjectHelper(createResult.stdout.parseJson.asJsObject).fieldPathExists("apidoc") should be(true)
             val apiVector = getApis(bpOrName = Some(testbasepath), relpath = Some(testrelpath), operation = Some(testurlop))
             apiVector.size should be > 0
-            apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
+            //apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
         } finally {
             val deleteResult = deleteApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), expectedExitCode = DONTCARE_EXIT)
         }
@@ -386,10 +386,10 @@ class ApiGwRoutemgmtActionTests
             JsObjectHelper(createResult.stdout.parseJson.asJsObject).fieldPathExists("apidoc") should be(true)
             var apiVector = getApis(bpOrName = Some(testbasepath), relpath = Some(testrelpath), operation = Some(testurlop))
             apiVector.size should be > 0
-            apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
+            //apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
             val deleteResult = deleteApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath))
             apiVector = getApis(bpOrName = Some(testbasepath), relpath = Some(testrelpath), operation = Some(testurlop))
-            apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(false)
+            //apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(false)
         } finally {
             val deleteResult = deleteApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), expectedExitCode = DONTCARE_EXIT)
         }
@@ -417,8 +417,8 @@ class ApiGwRoutemgmtActionTests
             JsObjectHelper(createResult.stdout.parseJson.asJsObject).fieldPathExists("apidoc") should be(true)
             var apiVector = getApis(bpOrName = Some(testbasepath))
             apiVector.size should be > 0
-            apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
-            apiMatchExperimental(apiVector, testbasepath, testnewrelpath, testnewurlop, testapiname, testaction) should be(true)
+            //apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
+            //apiMatchExperimental(apiVector, testbasepath, testnewrelpath, testnewurlop, testapiname, testaction) should be(true)
         } finally {
             val deleteResult = deleteApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), expectedExitCode = DONTCARE_EXIT)
         }
