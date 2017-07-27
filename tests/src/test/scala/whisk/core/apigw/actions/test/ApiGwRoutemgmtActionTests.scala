@@ -198,7 +198,7 @@ class ApiGwRoutemgmtActionTests
     //     return matches
     // } ????????????????????????????????????????????????????*******************************???????????????????????????????
 
-    def getApisV2(
+    def getApis(
         bpOrName: Option[String],
         relpath: Option[String] = None,
         operation: Option[String] = None,
@@ -231,7 +231,7 @@ class ApiGwRoutemgmtActionTests
         return apiJsArray.elements
     }
 
-    def createApiV2(
+    def createApi(
         namespace: Option[String] = Some("_"),
         basepath: Option[String] = Some("/"),
         relpath: Option[String],
@@ -264,7 +264,7 @@ class ApiGwRoutemgmtActionTests
         return rr
     }
 
-    def deleteApiV2(
+    def deleteApi(
         namespace: Option[String] = Some("_"),
         basepath: Option[String] = Some("/"),
         relpath: Option[String] = None,
@@ -342,7 +342,140 @@ class ApiGwRoutemgmtActionTests
         return matches
     }
 
-    behavior of "API Gateway routemgmt action parameter validation"
+    // behavior of "API Gateway routemgmt action parameter validation"
+
+    // it should "verify successful creation of a new API" in {
+    //     val testName = "APIGWTEST1"
+    //     val testbasepath = "/" + testName + "_bp"
+    //     val testrelpath = "/path"
+    //     val testurlop = "get"
+    //     val testapiname = testName + " API Name"
+    //     val actionName = testName + "_action"
+    //     val actionNamespace = wskprops.namespace
+    //     val actionUrl = "http://some.whisk.host/api/v1/namespaces/" + actionNamespace + "/actions/" + actionName
+    //     val actionAuthKey = testName + "_authkey"
+    //     val testaction = ApiAction(name = actionName, namespace = actionNamespace, backendUrl = actionUrl, authkey = actionAuthKey)
+
+    //     try {
+    //         val createResult = createApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), relpath = Some(testrelpath),
+    //             operation = Some(testurlop), apiname = Some(testapiname), action = Some(testaction))
+    //         JsObjectHelper(createResult.stdout.parseJson.asJsObject).fieldPathExists("apidoc") should be(true)
+    //         val apiVector = getApis(bpOrName = Some(testbasepath), relpath = Some(testrelpath), operation = Some(testurlop))
+    //         apiVector.size should be > 0
+    //         //apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
+    //     } finally {
+    //         val deleteResult = deleteApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), expectedExitCode = DONTCARE_EXIT)
+    //     }
+    // }
+
+    // it should "verify successful API deletion using basepath" in {
+    //     val testName = "APIGWTEST2"
+    //     val testbasepath = "/" + testName + "_bp"
+    //     val testrelpath = "/path"
+    //     val testurlop = "get"
+    //     val testapiname = testName + " API Name"
+    //     val actionName = testName + "_action"
+    //     val actionNamespace = wskprops.namespace
+    //     val actionUrl = "http://some.whisk.host/api/v1/namespaces/" + actionNamespace + "/actions/" + actionName
+    //     val actionAuthKey = testName + "_authkey"
+    //     val testaction = ApiAction(name = actionName, namespace = actionNamespace, backendUrl = actionUrl, authkey = actionAuthKey)
+
+    //     try {
+    //         val createResult = createApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), relpath = Some(testrelpath),
+    //             operation = Some(testurlop), apiname = Some(testapiname), action = Some(testaction))
+    //         JsObjectHelper(createResult.stdout.parseJson.asJsObject).fieldPathExists("apidoc") should be(true)
+    //         var apiVector = getApis(bpOrName = Some(testbasepath), relpath = Some(testrelpath), operation = Some(testurlop))
+    //         apiVector.size should be > 0
+    //         //apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
+    //         val deleteResult = deleteApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath))
+    //         apiVector = getApis(bpOrName = Some(testbasepath), relpath = Some(testrelpath), operation = Some(testurlop))
+    //         //apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(false)
+    //     } finally {
+    //         val deleteResult = deleteApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), expectedExitCode = DONTCARE_EXIT)
+    //     }
+    // }
+
+    // it should "verify successful addition of new relative path to existing API" in {
+    //     val testName = "APIGWTEST3"
+    //     val testbasepath = "/" + testName + "_bp"
+    //     val testrelpath = "/path"
+    //     val testnewrelpath = "/path_new"
+    //     val testurlop = "get"
+    //     val testnewurlop = "delete"
+    //     val testapiname = testName + " API Name"
+    //     val actionName = testName + "_action"
+    //     val actionNamespace = wskprops.namespace
+    //     val actionUrl = "http://some.whisk.host/api/v1/namespaces/" + actionNamespace + "/actions/" + actionName
+    //     val actionAuthKey = testName + "_authkey"
+    //     val testaction = ApiAction(name = actionName, namespace = actionNamespace, backendUrl = actionUrl, authkey = actionAuthKey)
+
+    //     try {
+    //         var createResult = createApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), relpath = Some(testrelpath),
+    //             operation = Some(testurlop), apiname = Some(testapiname), action = Some(testaction))
+    //         createResult = createApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), relpath = Some(testnewrelpath),
+    //             operation = Some(testnewurlop), apiname = Some(testapiname), action = Some(testaction))
+    //         JsObjectHelper(createResult.stdout.parseJson.asJsObject).fieldPathExists("apidoc") should be(true)
+    //         var apiVector = getApis(bpOrName = Some(testbasepath))
+    //         apiVector.size should be > 0
+    //         //apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
+    //         //apiMatchExperimental(apiVector, testbasepath, testnewrelpath, testnewurlop, testapiname, testaction) should be(true)
+    //     } finally {
+    //         val deleteResult = deleteApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), expectedExitCode = DONTCARE_EXIT)
+    //     }
+    // }
+
+    // it should "reject routemgmt actions that are invoked with not enough parameters" in {
+    //     val invalidArgs = Seq(
+    //         //getApi
+    //         ("/whisk.system/routemgmt/getApi", ANY_ERROR_EXIT, "Invalid authentication.", Seq()),
+
+    //         //deleteApi
+    //         ("/whisk.system/routemgmt/deleteApi", ANY_ERROR_EXIT, "Invalid authentication.", Seq("-p", "basepath", "/ApiGwRoutemgmtActionTests_bp")),
+    //         ("/whisk.system/routemgmt/deleteApi", ANY_ERROR_EXIT, "basepath is required", Seq("-p", "__ow_user", "_")),
+    //         ("/whisk.system/routemgmt/deleteApi", ANY_ERROR_EXIT, "When specifying an operation, the path is required",
+    //             Seq("-p", "__ow_user", "_", "-p", "basepath", "/ApiGwRoutemgmtActionTests_bp", "-p", "operation", "get")),
+
+    //         //createApi
+    //         ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "apidoc is required", Seq("-p", "__ow_user", "_")),
+    //         ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "apidoc is missing the namespace field",
+    //             Seq("-p", "__ow_user", "_", "-p", "apidoc", "{}")),
+    //         ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "apidoc is missing the gatewayBasePath field",
+    //             Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_"}""")),
+    //         ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "apidoc is missing the gatewayPath field",
+    //             Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp"}""")),
+    //         ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "apidoc is missing the gatewayMethod field",
+    //             Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp"}""")),
+    //         ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "apidoc is missing the action field",
+    //             Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp","gatewayMethod":"get"}""")),
+    //         ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "action is missing the backendMethod field",
+    //             Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp","gatewayMethod":"get","action":{}}""")),
+    //         ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "action is missing the backendUrl field",
+    //             Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp","gatewayMethod":"get","action":{"backendMethod":"post"}}""")),
+    //         ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "action is missing the namespace field",
+    //             Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp","gatewayMethod":"get","action":{"backendMethod":"post","backendUrl":"URL"}}""")),
+    //         ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "action is missing the name field",
+    //             Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp","gatewayMethod":"get","action":{"backendMethod":"post","backendUrl":"URL","namespace":"_"}}""")),
+    //         ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "action is missing the authkey field",
+    //             Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp","gatewayMethod":"get","action":{"backendMethod":"post","backendUrl":"URL","namespace":"_","name":"N"}}""")),
+    //         ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "swagger and gatewayBasePath are mutually exclusive and cannot be specified together",
+    //             Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp","gatewayMethod":"get","action":{"backendMethod":"post","backendUrl":"URL","namespace":"_","name":"N","authkey":"XXXX"},"swagger":{}}""")),
+    //         ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "apidoc field cannot be parsed. Ensure it is valid JSON",
+    //             Seq("-p", "__ow_user", "_", "-p", "apidoc", "{1:[}}}")))
+
+    //     invalidArgs foreach {
+    //         case (action: String, exitcode: Int, errmsg: String, params: Seq[String]) =>
+    //             val cmd: Seq[String] = Seq("action",
+    //                 "invoke",
+    //                 action,
+    //                 "-i", "-b", "-r",
+    //                 "--apihost", wskprops.apihost,
+    //                 "--auth", wskprops.authKey) ++ params
+    //             val rr = wsk.cli(cmd, expectedExitCode = exitcode)
+    //             rr.stderr should include regex (errmsg)
+    //     }
+    // }
+
+    behavior of "API Gateway apimgmt action parameter validation"
 
     it should "verify successful creation of a new API" in {
         val testName = "APIGWTEST1"
@@ -352,7 +485,7 @@ class ApiGwRoutemgmtActionTests
         val testapiname = testName + " API Name"
         val actionName = testName + "_action"
         val actionNamespace = wskprops.namespace
-        val actionUrl = "http://some.whisk.host/api/v1/namespaces/" + actionNamespace + "/actions/" + actionName
+        val actionUrl = "https://some.whisk.host/api/v1/web/" + actionNamespace + "/default/" + actionName + ".json"
         val actionAuthKey = testName + "_authkey"
         val testaction = ApiAction(name = actionName, namespace = actionNamespace, backendUrl = actionUrl, authkey = actionAuthKey)
 
@@ -362,7 +495,7 @@ class ApiGwRoutemgmtActionTests
             JsObjectHelper(createResult.stdout.parseJson.asJsObject).fieldPathExists("apidoc") should be(true)
             val apiVector = getApis(bpOrName = Some(testbasepath), relpath = Some(testrelpath), operation = Some(testurlop))
             apiVector.size should be > 0
-            //apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
+            apiMatch(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
         } finally {
             val deleteResult = deleteApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), expectedExitCode = DONTCARE_EXIT)
         }
@@ -376,7 +509,7 @@ class ApiGwRoutemgmtActionTests
         val testapiname = testName + " API Name"
         val actionName = testName + "_action"
         val actionNamespace = wskprops.namespace
-        val actionUrl = "http://some.whisk.host/api/v1/namespaces/" + actionNamespace + "/actions/" + actionName
+        val actionUrl = "https://some.whisk.host/api/v1/web/" + actionNamespace + "/default/" + actionName + ".json"
         val actionAuthKey = testName + "_authkey"
         val testaction = ApiAction(name = actionName, namespace = actionNamespace, backendUrl = actionUrl, authkey = actionAuthKey)
 
@@ -386,10 +519,10 @@ class ApiGwRoutemgmtActionTests
             JsObjectHelper(createResult.stdout.parseJson.asJsObject).fieldPathExists("apidoc") should be(true)
             var apiVector = getApis(bpOrName = Some(testbasepath), relpath = Some(testrelpath), operation = Some(testurlop))
             apiVector.size should be > 0
-            //apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
+            apiMatch(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
             val deleteResult = deleteApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath))
             apiVector = getApis(bpOrName = Some(testbasepath), relpath = Some(testrelpath), operation = Some(testurlop))
-            //apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(false)
+            apiMatch(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(false)
         } finally {
             val deleteResult = deleteApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), expectedExitCode = DONTCARE_EXIT)
         }
@@ -405,7 +538,7 @@ class ApiGwRoutemgmtActionTests
         val testapiname = testName + " API Name"
         val actionName = testName + "_action"
         val actionNamespace = wskprops.namespace
-        val actionUrl = "http://some.whisk.host/api/v1/namespaces/" + actionNamespace + "/actions/" + actionName
+        val actionUrl = "https://some.whisk.host/api/v1/web/" + actionNamespace + "/default/" + actionName + ".json"
         val actionAuthKey = testName + "_authkey"
         val testaction = ApiAction(name = actionName, namespace = actionNamespace, backendUrl = actionUrl, authkey = actionAuthKey)
 
@@ -417,143 +550,10 @@ class ApiGwRoutemgmtActionTests
             JsObjectHelper(createResult.stdout.parseJson.asJsObject).fieldPathExists("apidoc") should be(true)
             var apiVector = getApis(bpOrName = Some(testbasepath))
             apiVector.size should be > 0
-            //apiMatchExperimental(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
-            //apiMatchExperimental(apiVector, testbasepath, testnewrelpath, testnewurlop, testapiname, testaction) should be(true)
-        } finally {
-            val deleteResult = deleteApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), expectedExitCode = DONTCARE_EXIT)
-        }
-    }
-
-    it should "reject routemgmt actions that are invoked with not enough parameters" in {
-        val invalidArgs = Seq(
-            //getApi
-            ("/whisk.system/routemgmt/getApi", ANY_ERROR_EXIT, "Invalid authentication.", Seq()),
-
-            //deleteApi
-            ("/whisk.system/routemgmt/deleteApi", ANY_ERROR_EXIT, "Invalid authentication.", Seq("-p", "basepath", "/ApiGwRoutemgmtActionTests_bp")),
-            ("/whisk.system/routemgmt/deleteApi", ANY_ERROR_EXIT, "basepath is required", Seq("-p", "__ow_user", "_")),
-            ("/whisk.system/routemgmt/deleteApi", ANY_ERROR_EXIT, "When specifying an operation, the path is required",
-                Seq("-p", "__ow_user", "_", "-p", "basepath", "/ApiGwRoutemgmtActionTests_bp", "-p", "operation", "get")),
-
-            //createApi
-            ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "apidoc is required", Seq("-p", "__ow_user", "_")),
-            ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "apidoc is missing the namespace field",
-                Seq("-p", "__ow_user", "_", "-p", "apidoc", "{}")),
-            ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "apidoc is missing the gatewayBasePath field",
-                Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_"}""")),
-            ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "apidoc is missing the gatewayPath field",
-                Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp"}""")),
-            ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "apidoc is missing the gatewayMethod field",
-                Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp"}""")),
-            ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "apidoc is missing the action field",
-                Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp","gatewayMethod":"get"}""")),
-            ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "action is missing the backendMethod field",
-                Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp","gatewayMethod":"get","action":{}}""")),
-            ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "action is missing the backendUrl field",
-                Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp","gatewayMethod":"get","action":{"backendMethod":"post"}}""")),
-            ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "action is missing the namespace field",
-                Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp","gatewayMethod":"get","action":{"backendMethod":"post","backendUrl":"URL"}}""")),
-            ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "action is missing the name field",
-                Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp","gatewayMethod":"get","action":{"backendMethod":"post","backendUrl":"URL","namespace":"_"}}""")),
-            ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "action is missing the authkey field",
-                Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp","gatewayMethod":"get","action":{"backendMethod":"post","backendUrl":"URL","namespace":"_","name":"N"}}""")),
-            ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "swagger and gatewayBasePath are mutually exclusive and cannot be specified together",
-                Seq("-p", "__ow_user", "_", "-p", "apidoc", """{"namespace":"_","gatewayBasePath":"/ApiGwRoutemgmtActionTests_bp","gatewayPath":"ApiGwRoutemgmtActionTests_rp","gatewayMethod":"get","action":{"backendMethod":"post","backendUrl":"URL","namespace":"_","name":"N","authkey":"XXXX"},"swagger":{}}""")),
-            ("/whisk.system/routemgmt/createApi", ANY_ERROR_EXIT, "apidoc field cannot be parsed. Ensure it is valid JSON",
-                Seq("-p", "__ow_user", "_", "-p", "apidoc", "{1:[}}}")))
-
-        invalidArgs foreach {
-            case (action: String, exitcode: Int, errmsg: String, params: Seq[String]) =>
-                val cmd: Seq[String] = Seq("action",
-                    "invoke",
-                    action,
-                    "-i", "-b", "-r",
-                    "--apihost", wskprops.apihost,
-                    "--auth", wskprops.authKey) ++ params
-                val rr = wsk.cli(cmd, expectedExitCode = exitcode)
-                rr.stderr should include regex (errmsg)
-        }
-    }
-
-    behavior of "API Gateway apimgmt action parameter validation"
-
-    it should "verify successful creation of a new V2 API" in {
-        val testName = "APIGWTEST1"
-        val testbasepath = "/" + testName + "_bp"
-        val testrelpath = "/path"
-        val testurlop = "get"
-        val testapiname = testName + " API Name"
-        val actionName = testName + "_action"
-        val actionNamespace = wskprops.namespace
-        val actionUrl = "https://some.whisk.host/api/v1/web/" + actionNamespace + "/default/" + actionName + ".json"
-        val actionAuthKey = testName + "_authkey"
-        val testaction = ApiAction(name = actionName, namespace = actionNamespace, backendUrl = actionUrl, authkey = actionAuthKey)
-
-        try {
-            val createResult = createApiV2(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), relpath = Some(testrelpath),
-                operation = Some(testurlop), apiname = Some(testapiname), action = Some(testaction))
-            JsObjectHelper(createResult.stdout.parseJson.asJsObject).fieldPathExists("apidoc") should be(true)
-            val apiVector = getApisV2(bpOrName = Some(testbasepath), relpath = Some(testrelpath), operation = Some(testurlop))
-            apiVector.size should be > 0
-            apiMatch(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
-        } finally {
-            val deleteResult = deleteApiV2(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), expectedExitCode = DONTCARE_EXIT)
-        }
-    }
-
-    it should "verify successful V2 API deletion using basepath" in {
-        val testName = "APIGWTEST2"
-        val testbasepath = "/" + testName + "_bp"
-        val testrelpath = "/path"
-        val testurlop = "get"
-        val testapiname = testName + " API Name"
-        val actionName = testName + "_action"
-        val actionNamespace = wskprops.namespace
-        val actionUrl = "https://some.whisk.host/api/v1/web/" + actionNamespace + "/default/" + actionName + ".json"
-        val actionAuthKey = testName + "_authkey"
-        val testaction = ApiAction(name = actionName, namespace = actionNamespace, backendUrl = actionUrl, authkey = actionAuthKey)
-
-        try {
-            val createResult = createApiV2(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), relpath = Some(testrelpath),
-                operation = Some(testurlop), apiname = Some(testapiname), action = Some(testaction))
-            JsObjectHelper(createResult.stdout.parseJson.asJsObject).fieldPathExists("apidoc") should be(true)
-            var apiVector = getApisV2(bpOrName = Some(testbasepath), relpath = Some(testrelpath), operation = Some(testurlop))
-            apiVector.size should be > 0
-            apiMatch(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
-            val deleteResult = deleteApiV2(namespace = Some(wskprops.namespace), basepath = Some(testbasepath))
-            apiVector = getApisV2(bpOrName = Some(testbasepath), relpath = Some(testrelpath), operation = Some(testurlop))
-            apiMatch(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(false)
-        } finally {
-            val deleteResult = deleteApiV2(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), expectedExitCode = DONTCARE_EXIT)
-        }
-    }
-
-    it should "verify successful addition of new relative path to existing V2 API" in {
-        val testName = "APIGWTEST3"
-        val testbasepath = "/" + testName + "_bp"
-        val testrelpath = "/path"
-        val testnewrelpath = "/path_new"
-        val testurlop = "get"
-        val testnewurlop = "delete"
-        val testapiname = testName + " API Name"
-        val actionName = testName + "_action"
-        val actionNamespace = wskprops.namespace
-        val actionUrl = "https://some.whisk.host/api/v1/web/" + actionNamespace + "/default/" + actionName + ".json"
-        val actionAuthKey = testName + "_authkey"
-        val testaction = ApiAction(name = actionName, namespace = actionNamespace, backendUrl = actionUrl, authkey = actionAuthKey)
-
-        try {
-            var createResult = createApiV2(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), relpath = Some(testrelpath),
-                operation = Some(testurlop), apiname = Some(testapiname), action = Some(testaction))
-            createResult = createApiV2(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), relpath = Some(testnewrelpath),
-                operation = Some(testnewurlop), apiname = Some(testapiname), action = Some(testaction))
-            JsObjectHelper(createResult.stdout.parseJson.asJsObject).fieldPathExists("apidoc") should be(true)
-            var apiVector = getApisV2(bpOrName = Some(testbasepath))
-            apiVector.size should be > 0
             apiMatch(apiVector, testbasepath, testrelpath, testurlop, testapiname, testaction) should be(true)
             apiMatch(apiVector, testbasepath, testnewrelpath, testnewurlop, testapiname, testaction) should be(true)
         } finally {
-            val deleteResult = deleteApiV2(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), expectedExitCode = DONTCARE_EXIT)
+            val deleteResult = deleteApi(namespace = Some(wskprops.namespace), basepath = Some(testbasepath), expectedExitCode = DONTCARE_EXIT)
         }
     }
 
