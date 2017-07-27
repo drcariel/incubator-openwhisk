@@ -36,7 +36,7 @@ import common.TestUtils
 import common.TestUtils._
 import common.Wsk
 import common.WskPropsV2
-//import common.WskProps
+import common.WskProps
 import common.WskTestHelpers
 import spray.json._
 import spray.json.DefaultJsonProtocol._
