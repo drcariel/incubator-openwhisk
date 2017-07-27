@@ -66,7 +66,7 @@ class ApiGwEndToEndTests
      */
     override def beforeAll() = {
         cliWskPropsFile.deleteOnExit()
-        val wskprops = WskProps(token = "SOME TOKEN")
+        val wskprops = WskPropsV2(token = "SOME TOKEN")
         wskprops.writeFile(cliWskPropsFile)
         println(s"wsk temporary props file created here: ${cliWskPropsFile.getCanonicalPath()}")
     }
