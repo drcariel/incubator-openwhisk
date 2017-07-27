@@ -29,7 +29,7 @@ import common.TestUtils._
 import common.TestUtils
 import common.WhiskProperties
 import common.Wsk
-import common.WskProps
+//import common.WskProps
 import common.WskPropsV2
 import common.WskTestHelpers
 

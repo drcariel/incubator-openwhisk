@@ -32,8 +32,8 @@ type ApiCreateRequest struct {
     ApiDoc          *Api      `json:"apidoc,omitempty"`
 }
 type ApiCreateRequestOptions ApiOptions
+//type ApiCreateResponse RetApi
 type ApiCreateResponse RetApi
-type ApiCreateResponseV2 RetApiV2
 
 // wsk api list : Request, Response
 type ApiListRequest struct {
@@ -44,16 +44,16 @@ type ApiListRequestOptions struct {
     Skip            int       `url:"skip"`
     Docs            bool      `url:"docs,omitempty"`
 }
+//type ApiListResponse RetApiArray
 type ApiListResponse RetApiArray
-type ApiListResponseV2 RetApiArrayV2
 
 // wsk api get : Request, Response
 type ApiGetRequest struct {
     Api
 }
 type ApiGetRequestOptions ApiOptions
+//type ApiGetResponse RetApiArray
 type ApiGetResponse RetApiArray
-type ApiGetResponseV2 RetApiArrayV2
 
 // wsk api delete : Request, Response
 type ApiDeleteRequest struct {
@@ -98,6 +98,32 @@ type ApiUserAuth struct {
     AccessToken     string    `json:"accesstoken,omitempty"`
 }
 
+// type RetApiArray struct {
+//     Apis            []ApiItem `json:"apis,omitempty"`
+// }
+
+// type ApiItem struct {
+//     ApiId           string    `json:"id,omitempty"`
+//     QueryKey        string    `json:"key,omitempty"`
+//     ApiValue        *RetApi   `json:"value,omitempty"`
+// }
+
+// type RetApi struct {
+//     Namespace       string    `json:"namespace"`
+//     BaseUrl         string    `json:"gwApiUrl"`
+//     Activated       bool      `json:"gwApiActivated"`
+//     TenantId        string    `json:"tenantId"`
+//     Swagger         *ApiSwagger `json:"apidoc,omitempty"`
+// }
+
+// type ApiSwagger struct {
+//     SwaggerName     string    `json:"swagger,omitempty"`
+//     BasePath        string    `json:"basePath,omitempty"`
+//     Info            *ApiSwaggerInfo `json:"info,omitempty"`
+//     Paths           map[string]map[string]*ApiSwaggerOperationV1 `json:"paths,omitempty"`
+//     XConfig         map[string]map[string][]map[string]map[string]interface{} `json:"x-ibm-configuration,omitempty"`
+// }
+
 type RetApiArray struct {
     Apis            []ApiItem `json:"apis,omitempty"`
 }
@@ -105,7 +131,7 @@ type RetApiArray struct {
 type ApiItem struct {
     ApiId           string    `json:"id,omitempty"`
     QueryKey        string    `json:"key,omitempty"`
-    ApiValue        *RetApi   `json:"value,omitempty"`
+    ApiValue        *RetApi `json:"value,omitempty"`
 }
 
 type RetApi struct {
@@ -120,33 +146,7 @@ type ApiSwagger struct {
     SwaggerName     string    `json:"swagger,omitempty"`
     BasePath        string    `json:"basePath,omitempty"`
     Info            *ApiSwaggerInfo `json:"info,omitempty"`
-    Paths           map[string]map[string]*ApiSwaggerOperationV1 `json:"paths,omitempty"`
-    XConfig         map[string]map[string][]map[string]map[string]interface{} `json:"x-ibm-configuration,omitempty"`
-}
-
-type RetApiArrayV2 struct {
-    Apis            []ApiItemV2 `json:"apis,omitempty"`
-}
-
-type ApiItemV2 struct {
-    ApiId           string    `json:"id,omitempty"`
-    QueryKey        string    `json:"key,omitempty"`
-    ApiValue        *RetApiV2 `json:"value,omitempty"`
-}
-
-type RetApiV2 struct {
-    Namespace       string    `json:"namespace"`
-    BaseUrl         string    `json:"gwApiUrl"`
-    Activated       bool      `json:"gwApiActivated"`
-    TenantId        string    `json:"tenantId"`
-    Swagger         *ApiSwaggerV2 `json:"apidoc,omitempty"`
-}
-
-type ApiSwaggerV2 struct {
-    SwaggerName     string    `json:"swagger,omitempty"`
-    BasePath        string    `json:"basePath,omitempty"`
-    Info            *ApiSwaggerInfo `json:"info,omitempty"`
-    Paths           map[string]map[string]*ApiSwaggerOperationV2 `json:"paths,omitempty"`  // Paths["/a/path"]["get"] -> a generic object
+    Paths           map[string]map[string]*ApiSwaggerOperation `json:"paths,omitempty"`  // Paths["/a/path"]["get"] -> a generic object
     SecurityDef     interface{} `json:"securityDefinitions,omitempty"`
     Security        interface{} `json:"security,omitempty"`
     XConfig         interface{} `json:"x-ibm-configuration,omitempty"`
@@ -158,26 +158,26 @@ type ApiSwaggerInfo struct {
     Version         string    `json:"version,omitempty"`
 }
 
-type ApiSwaggerOperationV1 struct {
-    Responses       interface{} `json:"responses"`
-    XOpenWhisk      *ApiSwaggerOpXOpenWhiskV1 `json:"x-ibm-op-ext,omitempty"`
-}
+// type ApiSwaggerOperationV1 struct {
+//     Responses       interface{} `json:"responses"`
+//     XOpenWhisk      *ApiSwaggerOpXOpenWhiskV1 `json:"x-ibm-op-ext,omitempty"`
+// }
 
-type ApiSwaggerOperationV2 struct {
+type ApiSwaggerOperation struct {
     OperationId     string    `json:"operationId"`
     Responses       interface{} `json:"responses"`
-    XOpenWhisk      *ApiSwaggerOpXOpenWhiskV2 `json:"x-openwhisk,omitempty"`
+    XOpenWhisk      *ApiSwaggerOpXOpenWhisk `json:"x-openwhisk,omitempty"`
 }
 
-type ApiSwaggerOpXOpenWhiskV1 struct {
-    ActionName      string    `json:"actionName"`
-    Namespace       string    `json:"actionNamespace"`
-    ActionUrlVerb   string    `json:"backendMethod"`
-    ActionUrl       string    `json:"backendUrl"`
-    Policies        interface{} `json:"policies"`
-}
+// type ApiSwaggerOpXOpenWhiskV1 struct {
+//     ActionName      string    `json:"actionName"`
+//     Namespace       string    `json:"actionNamespace"`
+//     ActionUrlVerb   string    `json:"backendMethod"`
+//     ActionUrl       string    `json:"backendUrl"`
+//     Policies        interface{} `json:"policies"`
+// }
 
-type ApiSwaggerOpXOpenWhiskV2 struct {
+type ApiSwaggerOpXOpenWhisk struct {
     ActionName      string    `json:"action"`
     Namespace       string    `json:"namespace"`
     Package         string    `json:"package"`
@@ -203,9 +203,151 @@ const (
 // Api Methods //
 ////////////////////
 
+// func (s *ApiService) List(apiListOptions *ApiListRequestOptions) (*ApiListResponse, *http.Response, error) {
+//     route := "web/whisk.system/routemgmt/getApi.http"
+//     Debug(DbgInfo, "Api GET/list route: %s\n", route)
+
+//     routeUrl, err := addRouteOptions(route, apiListOptions)
+//     if err != nil {
+//         Debug(DbgError, "addRouteOptions(%s, %#v) error: '%s'\n", route, apiListOptions, err)
+//         errMsg := wski18n.T("Unable to add route options '{{.options}}'",
+//             map[string]interface{}{"options": apiListOptions})
+//         whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_GENERAL, DISPLAY_MSG,
+//             NO_DISPLAY_USAGE)
+//         return nil, nil, whiskErr
+//     }
+//     Debug(DbgInfo, "Api GET/list route with api options: %s\n", routeUrl)
+
+//     req, err := s.client.NewRequestUrl("GET", routeUrl, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson, AuthRequired)
+//     if err != nil {
+//         Debug(DbgError, "http.NewRequestUrl(GET, %s, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson, AuthRequired) error: '%s'\n", routeUrl, err)
+//         errMsg := wski18n.T("Unable to create HTTP request for GET '{{.route}}': {{.err}}",
+//             map[string]interface{}{"route": routeUrl, "err": err})
+//         whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_NETWORK, DISPLAY_MSG,
+//             NO_DISPLAY_USAGE)
+//         return nil, nil, whiskErr
+//     }
+
+//     apiArray := new(ApiListResponse)
+//     resp, err := s.client.Do(req, &apiArray, ExitWithErrorOnTimeout)
+//     if err != nil {
+//         Debug(DbgError, "s.client.Do() error - HTTP req %s; error '%s'\n", req.URL.String(), err)
+//         return nil, resp, err
+//     }
+
+//     return apiArray, resp, err
+// }
+
+// func (s *ApiService) Insert(api *ApiCreateRequest, options *ApiCreateRequestOptions, overwrite bool) (*ApiCreateResponse, *http.Response, error) {
+//     route := "web/whisk.system/routemgmt/createApi.http"
+//     Debug(DbgInfo, "Api PUT route: %s\n", route)
+
+//     routeUrl, err := addRouteOptions(route, options)
+//     if err != nil {
+//         Debug(DbgError, "addRouteOptions(%s, %#v) error: '%s'\n", route, options, err)
+//         errMsg := wski18n.T("Unable to add route options '{{.options}}'",
+//             map[string]interface{}{"options": options})
+//         whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_GENERAL, DISPLAY_MSG,
+//             NO_DISPLAY_USAGE)
+//         return nil, nil, whiskErr
+//     }
+//     Debug(DbgError, "Api create route with options: %s\n", routeUrl)
+
+//     req, err := s.client.NewRequestUrl("POST", routeUrl, api, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson, AuthRequired)
+//     if err != nil {
+//         Debug(DbgError, "http.NewRequestUrl(POST, %s, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson) error: '%s'\n", route, err)
+//         errMsg := wski18n.T("Unable to create HTTP request for POST '{{.route}}': {{.err}}",
+//             map[string]interface{}{"route": route, "err": err})
+//         whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_NETWORK, DISPLAY_MSG,
+//             NO_DISPLAY_USAGE)
+//         return nil, nil, whiskErr
+//     }
+
+//     retApi := new(ApiCreateResponse)
+//     resp, err := s.client.Do(req, &retApi, ExitWithErrorOnTimeout)
+//     if err != nil {
+//         Debug(DbgError, "s.client.Do() error - HTTP req %s; error '%s'\n", req.URL.String(), err)
+//         return nil, resp, err
+//     }
+
+//     return retApi, resp, nil
+// }
+
+// func (s *ApiService) Get(api *ApiGetRequest, options *ApiGetRequestOptions) (*ApiGetResponse, *http.Response, error) {
+//     route := "web/whisk.system/routemgmt/getApi.http"
+//     Debug(DbgInfo, "Api GET route: %s\n", route)
+
+//     routeUrl, err := addRouteOptions(route, options)
+//     if err != nil {
+//         Debug(DbgError, "addRouteOptions(%s, %#v) error: '%s'\n", route, options, err)
+//         errMsg := wski18n.T("Unable to add route options '{{.options}}'",
+//             map[string]interface{}{"options": options})
+//         whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_GENERAL, DISPLAY_MSG,
+//             NO_DISPLAY_USAGE)
+//         return nil, nil, whiskErr
+//     }
+//     Debug(DbgError, "Api get route with options: %s\n", routeUrl)
+
+//     req, err := s.client.NewRequestUrl("GET", routeUrl, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson, AuthRequired)
+//     if err != nil {
+//         Debug(DbgError, "http.NewRequestUrl(GET, %s, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson, AuthRequired) error: '%s'\n", route, err)
+//         errMsg := wski18n.T("Unable to create HTTP request for GET '{{.route}}': {{.err}}",
+//             map[string]interface{}{"route": route, "err": err})
+//         whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_NETWORK, DISPLAY_MSG,
+//             NO_DISPLAY_USAGE)
+//         return nil, nil, whiskErr
+//     }
+
+//     retApi := new(ApiGetResponse)
+//     resp, err := s.client.Do(req, &retApi, ExitWithErrorOnTimeout)
+//     if err != nil {
+//         Debug(DbgError, "s.client.Do() error - HTTP req %s; error '%s'\n", req.URL.String(), err)
+//         return nil, resp, err
+//     }
+
+//     return retApi, resp, nil
+// }
+
+// func (s *ApiService) Delete(api *ApiDeleteRequest, options *ApiDeleteRequestOptions) (*http.Response, error) {
+//     route := "web/whisk.system/routemgmt/deleteApi.http"
+//     Debug(DbgInfo, "Api DELETE route: %s\n", route)
+
+//     routeUrl, err := addRouteOptions(route, options)
+//     if err != nil {
+//         Debug(DbgError, "addRouteOptions(%s, %#v) error: '%s'\n", route, options, err)
+//         errMsg := wski18n.T("Unable to add route options '{{.options}}'",
+//             map[string]interface{}{"options": options})
+//         whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_GENERAL, DISPLAY_MSG,
+//             NO_DISPLAY_USAGE)
+//         return nil, whiskErr
+//     }
+//     Debug(DbgError, "Api DELETE route with options: %s\n", routeUrl)
+
+//     req, err := s.client.NewRequestUrl("DELETE", routeUrl, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson, AuthRequired)
+//     if err != nil {
+//         Debug(DbgError, "http.NewRequestUrl(DELETE, %s, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson, AuthRequired) error: '%s'\n", route, err)
+//         errMsg := wski18n.T("Unable to create HTTP request for DELETE '{{.route}}': {{.err}}",
+//             map[string]interface{}{"route": route, "err": err})
+//         whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_NETWORK, DISPLAY_MSG,
+//             NO_DISPLAY_USAGE)
+//         return nil, whiskErr
+//     }
+
+//     retApi := new(ApiDeleteResponse)
+//     resp, err := s.client.Do(req, &retApi, ExitWithErrorOnTimeout)
+//     if err != nil {
+//         Debug(DbgError, "s.client.Do() error - HTTP req %s; error '%s'\n", req.URL.String(), err)
+//         return resp, err
+//     }
+
+//     return nil, nil
+// }
+
+/////////////
+// V2 Cmds //
+/////////////
 func (s *ApiService) List(apiListOptions *ApiListRequestOptions) (*ApiListResponse, *http.Response, error) {
-    route := "web/whisk.system/routemgmt/getApi.http"
-    Debug(DbgInfo, "Api GET/list route: %s\n", route)
+    route := "web/whisk.system/apimgmt/getApi.http"
 
     routeUrl, err := addRouteOptions(route, apiListOptions)
     if err != nil {
@@ -220,7 +362,7 @@ func (s *ApiService) List(apiListOptions *ApiListRequestOptions) (*ApiListRespon
 
     req, err := s.client.NewRequestUrl("GET", routeUrl, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson, AuthRequired)
     if err != nil {
-        Debug(DbgError, "http.NewRequestUrl(GET, %s, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson, AuthRequired) error: '%s'\n", routeUrl, err)
+        Debug(DbgError, "http.NewRequestUrl(GET, %s, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson) error: '%s'\n", routeUrl, err)
         errMsg := wski18n.T("Unable to create HTTP request for GET '{{.route}}': {{.err}}",
             map[string]interface{}{"route": routeUrl, "err": err})
         whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_NETWORK, DISPLAY_MSG,
@@ -235,11 +377,17 @@ func (s *ApiService) List(apiListOptions *ApiListRequestOptions) (*ApiListRespon
         return nil, resp, err
     }
 
+    err = validateApiListResponse(apiArray)
+    if err != nil {
+        Debug(DbgError, "Not a valid ApiListReponse object\n")
+        return nil, resp, err
+    }
+
     return apiArray, resp, err
 }
 
 func (s *ApiService) Insert(api *ApiCreateRequest, options *ApiCreateRequestOptions, overwrite bool) (*ApiCreateResponse, *http.Response, error) {
-    route := "web/whisk.system/routemgmt/createApi.http"
+    route := "web/whisk.system/apimgmt/createApi.http"
     Debug(DbgInfo, "Api PUT route: %s\n", route)
 
     routeUrl, err := addRouteOptions(route, options)
@@ -270,154 +418,6 @@ func (s *ApiService) Insert(api *ApiCreateRequest, options *ApiCreateRequestOpti
         return nil, resp, err
     }
 
-    return retApi, resp, nil
-}
-
-func (s *ApiService) Get(api *ApiGetRequest, options *ApiGetRequestOptions) (*ApiGetResponse, *http.Response, error) {
-    route := "web/whisk.system/routemgmt/getApi.http"
-    Debug(DbgInfo, "Api GET route: %s\n", route)
-
-    routeUrl, err := addRouteOptions(route, options)
-    if err != nil {
-        Debug(DbgError, "addRouteOptions(%s, %#v) error: '%s'\n", route, options, err)
-        errMsg := wski18n.T("Unable to add route options '{{.options}}'",
-            map[string]interface{}{"options": options})
-        whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_GENERAL, DISPLAY_MSG,
-            NO_DISPLAY_USAGE)
-        return nil, nil, whiskErr
-    }
-    Debug(DbgError, "Api get route with options: %s\n", routeUrl)
-
-    req, err := s.client.NewRequestUrl("GET", routeUrl, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson, AuthRequired)
-    if err != nil {
-        Debug(DbgError, "http.NewRequestUrl(GET, %s, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson, AuthRequired) error: '%s'\n", route, err)
-        errMsg := wski18n.T("Unable to create HTTP request for GET '{{.route}}': {{.err}}",
-            map[string]interface{}{"route": route, "err": err})
-        whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_NETWORK, DISPLAY_MSG,
-            NO_DISPLAY_USAGE)
-        return nil, nil, whiskErr
-    }
-
-    retApi := new(ApiGetResponse)
-    resp, err := s.client.Do(req, &retApi, ExitWithErrorOnTimeout)
-    if err != nil {
-        Debug(DbgError, "s.client.Do() error - HTTP req %s; error '%s'\n", req.URL.String(), err)
-        return nil, resp, err
-    }
-
-    return retApi, resp, nil
-}
-
-func (s *ApiService) Delete(api *ApiDeleteRequest, options *ApiDeleteRequestOptions) (*http.Response, error) {
-    route := "web/whisk.system/routemgmt/deleteApi.http"
-    Debug(DbgInfo, "Api DELETE route: %s\n", route)
-
-    routeUrl, err := addRouteOptions(route, options)
-    if err != nil {
-        Debug(DbgError, "addRouteOptions(%s, %#v) error: '%s'\n", route, options, err)
-        errMsg := wski18n.T("Unable to add route options '{{.options}}'",
-            map[string]interface{}{"options": options})
-        whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_GENERAL, DISPLAY_MSG,
-            NO_DISPLAY_USAGE)
-        return nil, whiskErr
-    }
-    Debug(DbgError, "Api DELETE route with options: %s\n", routeUrl)
-
-    req, err := s.client.NewRequestUrl("DELETE", routeUrl, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson, AuthRequired)
-    if err != nil {
-        Debug(DbgError, "http.NewRequestUrl(DELETE, %s, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson, AuthRequired) error: '%s'\n", route, err)
-        errMsg := wski18n.T("Unable to create HTTP request for DELETE '{{.route}}': {{.err}}",
-            map[string]interface{}{"route": route, "err": err})
-        whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_NETWORK, DISPLAY_MSG,
-            NO_DISPLAY_USAGE)
-        return nil, whiskErr
-    }
-
-    retApi := new(ApiDeleteResponse)
-    resp, err := s.client.Do(req, &retApi, ExitWithErrorOnTimeout)
-    if err != nil {
-        Debug(DbgError, "s.client.Do() error - HTTP req %s; error '%s'\n", req.URL.String(), err)
-        return resp, err
-    }
-
-    return nil, nil
-}
-
-/////////////
-// V2 Cmds //
-/////////////
-func (s *ApiService) ListV2(apiListOptions *ApiListRequestOptions) (*ApiListResponseV2, *http.Response, error) {
-    route := "web/whisk.system/apimgmt/getApi.http"
-
-    routeUrl, err := addRouteOptions(route, apiListOptions)
-    if err != nil {
-        Debug(DbgError, "addRouteOptions(%s, %#v) error: '%s'\n", route, apiListOptions, err)
-        errMsg := wski18n.T("Unable to add route options '{{.options}}'",
-            map[string]interface{}{"options": apiListOptions})
-        whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_GENERAL, DISPLAY_MSG,
-            NO_DISPLAY_USAGE)
-        return nil, nil, whiskErr
-    }
-    Debug(DbgInfo, "Api GET/list route with api options: %s\n", routeUrl)
-
-    req, err := s.client.NewRequestUrl("GET", routeUrl, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson, AuthRequired)
-    if err != nil {
-        Debug(DbgError, "http.NewRequestUrl(GET, %s, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson) error: '%s'\n", routeUrl, err)
-        errMsg := wski18n.T("Unable to create HTTP request for GET '{{.route}}': {{.err}}",
-            map[string]interface{}{"route": routeUrl, "err": err})
-        whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_NETWORK, DISPLAY_MSG,
-            NO_DISPLAY_USAGE)
-        return nil, nil, whiskErr
-    }
-
-    apiArray := new(ApiListResponseV2)
-    resp, err := s.client.Do(req, &apiArray, ExitWithErrorOnTimeout)
-    if err != nil {
-        Debug(DbgError, "s.client.Do() error - HTTP req %s; error '%s'\n", req.URL.String(), err)
-        return nil, resp, err
-    }
-
-    err = validateApiListResponse(apiArray)
-    if err != nil {
-        Debug(DbgError, "Not a valid ApiListReponse object\n")
-        return nil, resp, err
-    }
-
-    return apiArray, resp, err
-}
-
-func (s *ApiService) InsertV2(api *ApiCreateRequest, options *ApiCreateRequestOptions, overwrite bool) (*ApiCreateResponseV2, *http.Response, error) {
-    route := "web/whisk.system/apimgmt/createApi.http"
-    Debug(DbgInfo, "Api PUT route: %s\n", route)
-
-    routeUrl, err := addRouteOptions(route, options)
-    if err != nil {
-        Debug(DbgError, "addRouteOptions(%s, %#v) error: '%s'\n", route, options, err)
-        errMsg := wski18n.T("Unable to add route options '{{.options}}'",
-            map[string]interface{}{"options": options})
-        whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_GENERAL, DISPLAY_MSG,
-            NO_DISPLAY_USAGE)
-        return nil, nil, whiskErr
-    }
-    Debug(DbgError, "Api create route with options: %s\n", routeUrl)
-
-    req, err := s.client.NewRequestUrl("POST", routeUrl, api, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson, AuthRequired)
-    if err != nil {
-        Debug(DbgError, "http.NewRequestUrl(POST, %s, nil, DoNotIncludeNamespaceInUrl, AppendOpenWhiskPathPrefix, EncodeBodyAsJson) error: '%s'\n", route, err)
-        errMsg := wski18n.T("Unable to create HTTP request for POST '{{.route}}': {{.err}}",
-            map[string]interface{}{"route": route, "err": err})
-        whiskErr := MakeWskErrorFromWskError(errors.New(errMsg), err, EXITCODE_ERR_NETWORK, DISPLAY_MSG,
-            NO_DISPLAY_USAGE)
-        return nil, nil, whiskErr
-    }
-
-    retApi := new(ApiCreateResponseV2)
-    resp, err := s.client.Do(req, &retApi, ExitWithErrorOnTimeout)
-    if err != nil {
-        Debug(DbgError, "s.client.Do() error - HTTP req %s; error '%s'\n", req.URL.String(), err)
-        return nil, resp, err
-    }
-
     err = validateApiSwaggerResponse(retApi.Swagger)
     if err != nil {
         Debug(DbgError, "Not a valid API creation response\n")
@@ -427,7 +427,7 @@ func (s *ApiService) InsertV2(api *ApiCreateRequest, options *ApiCreateRequestOp
     return retApi, resp, nil
 }
 
-func (s *ApiService) GetV2(api *ApiGetRequest, options *ApiGetRequestOptions) (*ApiGetResponseV2, *http.Response, error) {
+func (s *ApiService) Get(api *ApiGetRequest, options *ApiGetRequestOptions) (*ApiGetResponse, *http.Response, error) {
     route := "web/whisk.system/apimgmt/getApi.http"
     Debug(DbgInfo, "Api GET route: %s\n", route)
 
@@ -452,7 +452,7 @@ func (s *ApiService) GetV2(api *ApiGetRequest, options *ApiGetRequestOptions) (*
         return nil, nil, whiskErr
     }
 
-    retApi := new(ApiGetResponseV2)
+    retApi := new(ApiGetResponse)
     resp, err := s.client.Do(req, &retApi, ExitWithErrorOnTimeout)
     if err != nil {
         Debug(DbgError, "s.client.Do() error - HTTP req %s; error '%s'\n", req.URL.String(), err)
@@ -462,7 +462,7 @@ func (s *ApiService) GetV2(api *ApiGetRequest, options *ApiGetRequestOptions) (*
     return retApi, resp, nil
 }
 
-func (s *ApiService) DeleteV2(api *ApiDeleteRequest, options *ApiDeleteRequestOptions) (*http.Response, error) {
+func (s *ApiService) Delete(api *ApiDeleteRequest, options *ApiDeleteRequestOptions) (*http.Response, error) {
     route := "web/whisk.system/apimgmt/deleteApi.http"
     Debug(DbgInfo, "Api DELETE route: %s\n", route)
 
@@ -498,7 +498,7 @@ func (s *ApiService) DeleteV2(api *ApiDeleteRequest, options *ApiDeleteRequestOp
 }
 
 
-func validateApiListResponse(apiList *ApiListResponseV2) error {
+func validateApiListResponse(apiList *ApiListResponse) error {
     for i:=0; i<len(apiList.Apis); i++ {
         if apiList.Apis[i].ApiValue == nil {
             Debug(DbgError, "validateApiResponse: No value stanza in api %v\n", apiList.Apis[i])
@@ -515,7 +515,7 @@ func validateApiListResponse(apiList *ApiListResponseV2) error {
     return nil
 }
 
-func validateApiSwaggerResponse(swagger *ApiSwaggerV2) error {
+func validateApiSwaggerResponse(swagger *ApiSwagger) error {
     if swagger == nil {
         Debug(DbgError, "validateApiSwaggerResponse: No apidoc stanza in api\n")
         errMsg := wski18n.T("Internal error. Missing apidoc stanza in API configuration")
@@ -533,7 +533,7 @@ func validateApiSwaggerResponse(swagger *ApiSwaggerV2) error {
     return nil
 }
 
-func validateApiPath(path map[string]*ApiSwaggerOperationV2) error {
+func validateApiPath(path map[string]*ApiSwaggerOperation) error {
     for op, opv := range path {
         err := validateApiOperation(op, opv)
         if err != nil {
@@ -544,7 +544,7 @@ func validateApiPath(path map[string]*ApiSwaggerOperationV2) error {
     return nil
 }
 
-func validateApiOperation(opName string, op *ApiSwaggerOperationV2) error {
+func validateApiOperation(opName string, op *ApiSwaggerOperation) error {
     if (op.XOpenWhisk != nil && len(op.OperationId) == 0) {
         Debug(DbgError, "validateApiOperation: No operationId field in operation %v\n", op)
         errMsg := wski18n.T("Missing operationId field in API configuration for operation {{.op}}",

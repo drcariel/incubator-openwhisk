@@ -35,8 +35,8 @@ import common.TestHelpers
 import common.TestUtils
 import common.TestUtils._
 import common.Wsk
-import common.WskProps
 import common.WskPropsV2
+//import common.WskProps
 import common.WskTestHelpers
 import spray.json._
 import spray.json.DefaultJsonProtocol._
@@ -66,7 +66,7 @@ class ApiGwEndToEndTests
      */
     override def beforeAll() = {
         cliWskPropsFile.deleteOnExit()
-        val wskprops = WskPropsV2(token = "SOME TOKEN")
+        val wskprops = WskProps(token = "SOME TOKEN")
         wskprops.writeFile(cliWskPropsFile)
         println(s"wsk temporary props file created here: ${cliWskPropsFile.getCanonicalPath()}")
     }
