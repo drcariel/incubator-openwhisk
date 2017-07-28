@@ -68,86 +68,86 @@ class ApiGwRoutemgmtActionTests
     implicit val wskprops = WskProps(authKey = WskAdmin.listKeys(systemId)(0)._1, namespace = systemId)
     val wsk = new Wsk
 
-    def getApis(
-        bpOrName: Option[String],
-        relpath: Option[String] = None,
-        operation: Option[String] = None,
-        docid: Option[String] = None): Vector[JsValue] = {
-        val parms = Map[String, JsValue]() ++
-            Map("__ow_user" -> wskprops.namespace.toJson) ++
-            { bpOrName map { b => Map("basepath" -> b.toJson) } getOrElse Map[String, JsValue]() } ++
-            { relpath map { r => Map("relpath" -> r.toJson) } getOrElse Map[String, JsValue]() } ++
-            { operation map { o => Map("operation" -> o.toJson) } getOrElse Map[String, JsValue]() } ++
-            { docid map { d => Map("docid" -> d.toJson) } getOrElse Map[String, JsValue]() }
+    // def getApis(
+    //     bpOrName: Option[String],
+    //     relpath: Option[String] = None,
+    //     operation: Option[String] = None,
+    //     docid: Option[String] = None): Vector[JsValue] = {
+    //     val parms = Map[String, JsValue]() ++
+    //         Map("__ow_user" -> wskprops.namespace.toJson) ++
+    //         { bpOrName map { b => Map("basepath" -> b.toJson) } getOrElse Map[String, JsValue]() } ++
+    //         { relpath map { r => Map("relpath" -> r.toJson) } getOrElse Map[String, JsValue]() } ++
+    //         { operation map { o => Map("operation" -> o.toJson) } getOrElse Map[String, JsValue]() } ++
+    //         { docid map { d => Map("docid" -> d.toJson) } getOrElse Map[String, JsValue]() }
 
-        val rr = wsk.action.invoke(
-            name = "routemgmt/getApi",
-            parameters = parms,
-            blocking = true,
-            result = true,
-            expectedExitCode = SUCCESS_EXIT)(wskprops)
-        var apiJsArray: JsArray =
-            try {
-                var apisobj = rr.stdout.parseJson.asJsObject.fields("apis")
-                apisobj.convertTo[JsArray]
-            } catch {
-                case e: Exception =>
-                    JsArray.empty
-            }
-        return apiJsArray.elements
-    }
+    //     val rr = wsk.action.invoke(
+    //         name = "routemgmt/getApi",
+    //         parameters = parms,
+    //         blocking = true,
+    //         result = true,
+    //         expectedExitCode = SUCCESS_EXIT)(wskprops)
+    //     var apiJsArray: JsArray =
+    //         try {
+    //             var apisobj = rr.stdout.parseJson.asJsObject.fields("apis")
+    //             apisobj.convertTo[JsArray]
+    //         } catch {
+    //             case e: Exception =>
+    //                 JsArray.empty
+    //         }
+    //     return apiJsArray.elements
+    // }
 
-    def createApi(
-        namespace: Option[String] = Some("_"),
-        basepath: Option[String] = Some("/"),
-        relpath: Option[String],
-        operation: Option[String],
-        apiname: Option[String],
-        action: Option[ApiAction],
-        swagger: Option[String] = None,
-        expectedExitCode: Int = SUCCESS_EXIT): RunResult = {
-        val parms = Map[String, JsValue]() ++
-            { namespace map { n => Map("namespace" -> n.toJson) } getOrElse Map[String, JsValue]() } ++
-            { basepath map { b => Map("gatewayBasePath" -> b.toJson) } getOrElse Map[String, JsValue]() } ++
-            { relpath map { r => Map("gatewayPath" -> r.toJson) } getOrElse Map[String, JsValue]() } ++
-            { operation map { o => Map("gatewayMethod" -> o.toJson) } getOrElse Map[String, JsValue]() } ++
-            { apiname map { an => Map("apiName" -> an.toJson) } getOrElse Map[String, JsValue]() } ++
-            { action map { a => Map("action" -> a.toJson) } getOrElse Map[String, JsValue]() } ++
-            { swagger map { s => Map("swagger" -> s.toJson) } getOrElse Map[String, JsValue]() }
-        val parm = Map[String, JsValue]("apidoc" -> JsObject(parms)) ++
-            { namespace map { n => Map("__ow_user" -> n.toJson) } getOrElse Map[String, JsValue]() }
+    // def createApi(
+    //     namespace: Option[String] = Some("_"),
+    //     basepath: Option[String] = Some("/"),
+    //     relpath: Option[String],
+    //     operation: Option[String],
+    //     apiname: Option[String],
+    //     action: Option[ApiAction],
+    //     swagger: Option[String] = None,
+    //     expectedExitCode: Int = SUCCESS_EXIT): RunResult = {
+    //     val parms = Map[String, JsValue]() ++
+    //         { namespace map { n => Map("namespace" -> n.toJson) } getOrElse Map[String, JsValue]() } ++
+    //         { basepath map { b => Map("gatewayBasePath" -> b.toJson) } getOrElse Map[String, JsValue]() } ++
+    //         { relpath map { r => Map("gatewayPath" -> r.toJson) } getOrElse Map[String, JsValue]() } ++
+    //         { operation map { o => Map("gatewayMethod" -> o.toJson) } getOrElse Map[String, JsValue]() } ++
+    //         { apiname map { an => Map("apiName" -> an.toJson) } getOrElse Map[String, JsValue]() } ++
+    //         { action map { a => Map("action" -> a.toJson) } getOrElse Map[String, JsValue]() } ++
+    //         { swagger map { s => Map("swagger" -> s.toJson) } getOrElse Map[String, JsValue]() }
+    //     val parm = Map[String, JsValue]("apidoc" -> JsObject(parms)) ++
+    //         { namespace map { n => Map("__ow_user" -> n.toJson) } getOrElse Map[String, JsValue]() }
 
-        val rr = wsk.action.invoke(
-            name = "routemgmt/createApi",
-            parameters = parm,
-            blocking = true,
-            result = true,
-            expectedExitCode = expectedExitCode)(wskprops)
-        return rr
-    }
+    //     val rr = wsk.action.invoke(
+    //         name = "routemgmt/createApi",
+    //         parameters = parm,
+    //         blocking = true,
+    //         result = true,
+    //         expectedExitCode = expectedExitCode)(wskprops)
+    //     return rr
+    // }
 
-    def deleteApi(
-        namespace: Option[String] = Some("_"),
-        basepath: Option[String] = Some("/"),
-        relpath: Option[String] = None,
-        operation: Option[String] = None,
-        apiname: Option[String] = None,
-        expectedExitCode: Int = SUCCESS_EXIT): RunResult = {
-        val parms = Map[String, JsValue]() ++
-            { namespace map { n => Map("__ow_user" -> n.toJson) } getOrElse Map[String, JsValue]() } ++
-            { basepath map { b => Map("basepath" -> b.toJson) } getOrElse Map[String, JsValue]() } ++
-            { relpath map { r => Map("relpath" -> r.toJson) } getOrElse Map[String, JsValue]() } ++
-            { operation map { o => Map("operation" -> o.toJson) } getOrElse Map[String, JsValue]() } ++
-            { apiname map { an => Map("apiname" -> an.toJson) } getOrElse Map[String, JsValue]() }
+    // def deleteApi(
+    //     namespace: Option[String] = Some("_"),
+    //     basepath: Option[String] = Some("/"),
+    //     relpath: Option[String] = None,
+    //     operation: Option[String] = None,
+    //     apiname: Option[String] = None,
+    //     expectedExitCode: Int = SUCCESS_EXIT): RunResult = {
+    //     val parms = Map[String, JsValue]() ++
+    //         { namespace map { n => Map("__ow_user" -> n.toJson) } getOrElse Map[String, JsValue]() } ++
+    //         { basepath map { b => Map("basepath" -> b.toJson) } getOrElse Map[String, JsValue]() } ++
+    //         { relpath map { r => Map("relpath" -> r.toJson) } getOrElse Map[String, JsValue]() } ++
+    //         { operation map { o => Map("operation" -> o.toJson) } getOrElse Map[String, JsValue]() } ++
+    //         { apiname map { an => Map("apiname" -> an.toJson) } getOrElse Map[String, JsValue]() }
 
-        val rr = wsk.action.invoke(
-            name = "routemgmt/deleteApi",
-            parameters = parms,
-            blocking = true,
-            result = true,
-            expectedExitCode = expectedExitCode)(wskprops)
-        return rr
-    }
+    //     val rr = wsk.action.invoke(
+    //         name = "routemgmt/deleteApi",
+    //         parameters = parms,
+    //         blocking = true,
+    //         result = true,
+    //         expectedExitCode = expectedExitCode)(wskprops)
+    //     return rr
+    // }
 
     // def apiMatchExperimental(
     //     apiarr: Vector[JsValue],
