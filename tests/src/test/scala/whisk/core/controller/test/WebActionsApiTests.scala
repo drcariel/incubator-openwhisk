@@ -75,28 +75,28 @@ import whisk.http.Messages
  * "using Specs2RouteTest DSL to chain HTTP requests for unit testing, as in ~>"
  */
 
-@RunWith(classOf[JUnitRunner])
-class WebActionsApiTestsV1 extends FlatSpec with Matchers with WebActionsApiTests {
-    //override lazy val webInvokePathSegments = Seq("experimental", "web")
-    override lazy val webInvokePathSegments = Seq("web")
-    //override lazy val webApiDirectives = WebApiDirectives.exp
-    override lazy val webApiDirectives = WebApiDirectives.web
+// @RunWith(classOf[JUnitRunner])
+// class WebActionsApiTestsV1 extends FlatSpec with Matchers with WebActionsApiTests {
+//     //override lazy val webInvokePathSegments = Seq("experimental", "web")
+//     override lazy val webInvokePathSegments = Seq("web")
+//     //override lazy val webApiDirectives = WebApiDirectives.exp
+//     override lazy val webApiDirectives = WebApiDirectives.web
 
-    "properties" should "match verion" in {
-        webApiDirectives.method shouldBe "__ow_meta_verb"
-        webApiDirectives.headers shouldBe "__ow_meta_headers"
-        webApiDirectives.path shouldBe "__ow_meta_path"
-        webApiDirectives.namespace shouldBe "__ow_meta_namespace"
-        webApiDirectives.query shouldBe "__ow_meta_query"
-        webApiDirectives.body shouldBe "__ow_meta_body"
-        webApiDirectives.statusCode shouldBe "code"
-        webApiDirectives.enforceExtension shouldBe true
-        webApiDirectives.reservedProperties shouldBe {
-            Set("__ow_meta_verb", "__ow_meta_headers", "__ow_meta_path", "__ow_meta_namespace",
-                "__ow_meta_query", "__ow_meta_body")
-        }
-    }
-}
+//     "properties" should "match verion" in {
+//         webApiDirectives.method shouldBe "__ow_meta_verb"
+//         webApiDirectives.headers shouldBe "__ow_meta_headers"
+//         webApiDirectives.path shouldBe "__ow_meta_path"
+//         webApiDirectives.namespace shouldBe "__ow_meta_namespace"
+//         webApiDirectives.query shouldBe "__ow_meta_query"
+//         webApiDirectives.body shouldBe "__ow_meta_body"
+//         webApiDirectives.statusCode shouldBe "code"
+//         webApiDirectives.enforceExtension shouldBe true
+//         webApiDirectives.reservedProperties shouldBe {
+//             Set("__ow_meta_verb", "__ow_meta_headers", "__ow_meta_path", "__ow_meta_namespace",
+//                 "__ow_meta_query", "__ow_meta_body")
+//         }
+//     }
+// }
 
 @RunWith(classOf[JUnitRunner])
 class WebActionsApiTestsV2 extends FlatSpec with Matchers with WebActionsApiTests {
