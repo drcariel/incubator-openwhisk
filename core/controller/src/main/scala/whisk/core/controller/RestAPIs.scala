@@ -174,9 +174,9 @@ protected[controller] class RestAPIVersion(apipath: String, apiversion: String)(
                 // web actions are distinct to separate the cors header
                 // and allow the actions themselves to respond to options
                 authenticate(basicauth) { user =>
-                    web.routes(user) ~ webexp.routes(user)
+                    web.routes(user) //~ webexp.routes(user)
                 } ~ {
-                    web.routes() ~ webexp.routes()
+                    web.routes() //~ webexp.routes()
                 } ~ options {
                     sendCorsHeaders {
                         complete(OK)
@@ -192,7 +192,7 @@ protected[controller] class RestAPIVersion(apipath: String, apiversion: String)(
     private val rules = new RulesApi(apipath, apiversion)
     private val activations = new ActivationsApi(apipath, apiversion)
     private val packages = new PackagesApi(apipath, apiversion)
-    private val webexp = new WebActionsApi(Seq("experimental", "web"), WebApiDirectives.exp)
+    //private val webexp = new WebActionsApi(Seq("experimental", "web"), WebApiDirectives.exp)
     private val web = new WebActionsApi(Seq("web"), WebApiDirectives.web)
 
     /**

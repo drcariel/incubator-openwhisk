@@ -76,12 +76,12 @@ protected[controller] object WebApiDirectives {
     val web = new WebApiDirectives("__ow_")
 
     // field names used for /experimental/web
-    val exp = new WebApiDirectives("__ow_meta_") {
-        override val enforceExtension = true
-        override val method = fields("verb")
-        override val namespace = fields("namespace")
-        override val statusCode = "code"
-    }
+    // val exp = new WebApiDirectives("__ow_meta_") {
+    //     override val enforceExtension = true
+    //     override val method = fields("verb")
+    //     override val namespace = fields("namespace")
+    //     override val statusCode = "code"
+    // }
 }
 
 private case class Context(
